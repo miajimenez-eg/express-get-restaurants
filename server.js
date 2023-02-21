@@ -11,6 +11,12 @@ app.get('/restaurants', async (req, res) => {
     res.json(allRestaurants);
 });
 
+// GET request for "/restaurants/:id"
+app.get('/restaurants/:id', async (req, res) => {
+    const restaurant = await Restaurant.findByPk(req.params.id);
+    res.json(restaurant)
+})
+
 
 app.listen(port, () => {
     sequelize.sync();
