@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const {Restaurant} = require('../models/index');
 const {sequelize} = require("../db");
-// const {check, validationResult} = require("express-validator");
+const {check, validationResult} = require("express-validator");
 
 // routes
 router.get('/', async (req, res) => {
@@ -18,12 +18,16 @@ router.get('/:id', async (req, res) => {
 
 // // PT3 create express routes
 router.use(express.json())
-router.post('/', async (req, res) => {
-    req.body = {name: "Vapiano", location: "Covent Garden", cuisine: "Italian"}
-    const newRestaurant = req.body;
-    const createNewRest = await Restaurant.create(newRestaurant);
-    const allRestaurants = await Restaurant.findAll()
-    res.json(allRestaurants);
+router.post('/', [check("name", "location", "cuisine").not().isEmpty().trim(),], async (req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        res.json({error: errors.array()});
+    } else {
+        const newRestaurant = req.body;
+        const createNewRest = await Restaurant.create(newRestaurant);
+        const allRestaurants = await Restaurant.findAll()
+        res.json(allRestaurants);
+    }
 })
 
 router.use(express.json())
